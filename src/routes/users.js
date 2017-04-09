@@ -2,6 +2,7 @@ let koa_router = require("koa-router");
 const Response = require("./Response");
 const ResCodeConstant = require("../constant/ResCodeConstant");
 const userDao = require("../db/dao/userDao");
+const messageDao = require("../db/dao/messageDao");
 const CryptoUtil=require("../utils/CryptoUtil");
 
 
@@ -122,5 +123,25 @@ router.post("/userInfo",async (ctx)=>{
     }
 
 });
+router.post("/message/friend",async(ctx)=>{
+    let params = ctx.request.body;
+    let resultMsg=null;
+    try {
+        let result = await messageDao.find({"send_id":ctx.user_id,"receive_id":params.receive_id});
+        console.log(result);
+        resultMsg=JSON.parse(JSON.stringify(ResCodeConstant.SUCCESS));
+        resultMsg.messageList=result;
+    }catch (e){
+        console.log(e);
+        resultMsg=ResCodeConstant.MONGODB_QUERY_ERROR;
+    }finally {
+        Response.httpJson(ctx, resultMsg);
+    }
+
+
+
+});
+
+
 
 module.exports = router;

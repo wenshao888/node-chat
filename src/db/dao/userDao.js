@@ -10,6 +10,7 @@ const mongodb = db.getMongodb();
 let currDb = null;
 const t_users_col = "t_users_col";
 
+
 mongodbClient.connect(mongodb.url, function (err, _db) {
     if (err) {
         throw err;
@@ -50,7 +51,11 @@ function insert(_user_json) {
     });
 }
 
-
+/**
+ * 按用户id列表查找用户信息列表
+ * @param idList
+ * @returns {Promise}
+ */
 function findInfoByUserIdList(idList) {
     return new Promise((resolve, reject) => {
         if (idList instanceof Array) {
@@ -70,6 +75,8 @@ function findInfoByUserIdList(idList) {
     });
 
 }
+
+
 
 exports.insert = insert;
 exports.findOne = findOne;
