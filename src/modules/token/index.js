@@ -63,7 +63,6 @@ function token(ops) {
                     } finally {
                         //
                         //ctx.response.set("tokenID", tokenNew.tokenID);
-                        console.log(tokenNew.tokenID+"============");
                         ctx.response.append("token", `tokenId=${tokenNew.tokenID}&time=${tokenNew.time}`);
 
                         ctx.Token = tokenNew;
@@ -80,7 +79,6 @@ function token(ops) {
 
         // 更新redis的值
         let pipeline = redis.pipeline();
-        console.log(tokenNew);
         pipeline.set(keyToken + tokenNew.tokenID, tokenNew.toJsonString());
         //noinspection JSUnresolvedFunction
         pipeline.pexpire(keyToken + tokenNew.tokenID, tokenNew.maxAge);
