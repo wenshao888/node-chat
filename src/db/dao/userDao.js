@@ -60,7 +60,6 @@ function findInfoByUserIdList(idList) {
     return new Promise((resolve, reject) => {
         if (idList instanceof Array) {
             let col = currDb.collection(t_users_col);
-            console.log(idList);
             col.find({"user_id": {$in: idList}}, {"user_id": 1, "name": 1, "head": 1}).toArray(function (err, result) {
                 if (err) reject(err);
                 else resolve(result);

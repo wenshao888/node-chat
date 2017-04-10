@@ -35,23 +35,38 @@ function insert(_message_json) {
 /**
  * 根据条件查询数据
  * @param _json
- * @param select
  * @returns {Promise}
  */
-function find(_json,select) {
-    if (!select){
-        select={};
+function find(_json) {
+    let result = checkParams(_json);
+    if (result.code==1){
+        throw new Error(result.msg);
     }
-    console.log(_json,select);
-
+    let json = result._json;
     return new Promise((resolve, reject) => {
         let col = currDb.collection(t_message_col);
-        col.find(_json,select).toArray( (err, result)=> {
+        col.find(json.select, json.show).sort(json.sort).toArray((err, result) => {
             if (err) reject(err);
             else resolve(result);
         })
     });
 
+}
+
+function checkParams(_json) {
+    if (!_json){
+        return {code: 1, msg: "_json错误"};
+    }
+    if (!("select" in _json) || typeof _json.select != "object") {
+        return {code: 1, msg: "select错误"};
+    }
+    if (!("show" in _json)) {
+        _json.show = {}
+    }
+    if (!("sort" in _json)) {
+        _json.sort = {}
+    }
+    return {code: 0, _json:_json };
 }
 
 exports.insert = insert;

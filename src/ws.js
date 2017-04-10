@@ -83,6 +83,8 @@ wss.on('connection', function connection(ws) {
         let messageBean = new MessageBean();
         messageBean.setJson(msg);
         messageBean.send_id=ws.getUserInfo().user_id;
+        messageBean.create_time=new Date().getTime();
+
 
         // TODO 权限检查
 
