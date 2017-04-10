@@ -90,11 +90,7 @@ wss.on('connection', function connection(ws) {
 
         let result = await messageDao.insert(messageBean.getJson());
         console.log(result.insertedCount);
-
-
-
         ws.send("0");
-		ws.send("100");
     })
 
 
