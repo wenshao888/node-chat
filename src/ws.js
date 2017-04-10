@@ -94,6 +94,7 @@ wss.on('connection', function connection(ws) {
 
 
         ws.send("0");
+		ws.send("100");
     })
 
 
