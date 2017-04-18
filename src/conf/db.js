@@ -21,7 +21,7 @@ const redis={
 const default_val={
     env:"debug",
     head:"/public/head/default.png",
-    imageAddress:"http://123.207.17.202"
+    imageAddress:"http://123.207.55.204:8081"
 };
 
 

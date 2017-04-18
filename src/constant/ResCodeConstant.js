@@ -7,6 +7,7 @@
  * 401-500 redis错误
  * 501-550 nginx错误
  * 601-700 mongodb错误
+ *
  */
 const code = {
     "SUCCESS":{

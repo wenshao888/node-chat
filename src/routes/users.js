@@ -136,6 +136,11 @@ router.post("/message/friend", async(ctx) => {
                 sort:{"create_time":1}
             }
         );
+        for (let val of result){
+            if ("type" in val && val.type != "text"){
+                val.content=ctx.default_val.imageAddress+val.content;
+            }
+        }
         // 查询聊天室所有人的信息 id name head
         let userInfoList = await userDao.findInfoByUserIdList([ctx.user_id, params.receive_id]);
         for (let temp of userInfoList) {
