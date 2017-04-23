@@ -9,6 +9,7 @@ const ioredis = require("ioredis");
 const db = require("./conf/db");
 const messageDao = require("./db/dao/messageDao");
 const MessageBean = require("./bean/MessageBean");
+const ResCodeConstant = require("./constant/ResCodeConstant");
 
 
 let tokenRedis = new ioredis(db.getRedis());
@@ -23,6 +24,16 @@ WebSocket.prototype.setUserInfo = function (userInfo) {
 };
 
 
+WebSocket.prototype.push = function (eventName,msg) {
+    if (typeof eventName == "string" && typeof msg =="object"){
+        let sendString = {"eventName":eventName,message:msg};
+        let stringify = JSON.stringify(sendString);
+        this.send(stringify);
+    }else{
+        console.log("格式错误！");
+    }
+
+};
 // 当前连接的所有id
 let socketId = new Map();
 
@@ -71,12 +82,13 @@ wss.on('connection', function connection(ws) {
         if ("eventName" in jsonMessage && typeof jsonMessage.eventName == "string") {
             let userInfo = ws.getUserInfo();
             if (!userInfo || !"user_id" in userInfo){
-                ws.send("1");
+                //ws.send();
             }else{
                 ws.emit(jsonMessage.eventName, jsonMessage);
             }
         }
     });
+
 
     ws.on("postMsg", async(msg) => {
         // 参数检查
@@ -84,13 +96,12 @@ wss.on('connection', function connection(ws) {
         messageBean.setJson(msg);
         messageBean.send_id=ws.getUserInfo().user_id;
         messageBean.create_time=new Date().getTime();
-
-
         // TODO 权限检查
-
         let result = await messageDao.insert(messageBean.getJson());
-        console.log(result.insertedCount);
-        ws.send("0");
+        let resultMsg = JSON.parse(JSON.stringify(ResCodeConstant.SUCCESS));
+        resultMsg.sendCode=msg.sendCode; // 返回发送码
+
+        ws.push("responseMsg",resultMsg);
     })
 
 

@@ -46,7 +46,6 @@ const code = {
     "MONGODB_QUERY_ERROR":{
         code:603,
         err_msg_ch:"查询记录失败"
-
     }
 
 

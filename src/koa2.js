@@ -19,7 +19,7 @@ const db=require("./conf/db");
 app.use(morgan(db.getDefault_val));
 app.use(bodyParser());
 app.use(token({
-        "maxAge":1000*60*30,
+        "maxAge":1000*60*60*24,
         "redisStore":redis
     })
 );
