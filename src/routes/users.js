@@ -136,6 +136,7 @@ router.post("/message/friend", async(ctx) => {
                 sort:{"create_time":1}
             }
         );
+
         for (let val of result){
             if ("type" in val && val.type != "text"){
                 val.content=ctx.default_val.imageAddress+val.content;

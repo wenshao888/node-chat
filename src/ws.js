@@ -100,7 +100,7 @@ wss.on('connection', function connection(ws) {
         let result = await messageDao.insert(messageBean.getJson());
         let resultMsg = JSON.parse(JSON.stringify(ResCodeConstant.SUCCESS));
         resultMsg.sendCode=msg.sendCode; // 返回发送码
-
+        console.log("==============")
         ws.push("responseMsg",resultMsg);
     })
 

@@ -13,7 +13,8 @@ class MessageBean extends BaseBean{
             receive_id:{type:"string",maxLength:50,required:true},
             type:{type:"string",maxLength:20,required:true},
             create_time:{type:"number",maxLength:20,required:true},
-            content:{type:"string",maxLength:500,required:true}
+            content:{type:"string",maxLength:500,required:true},
+            duration:{type:"number"}
         }
     }
     static check(Bean){
@@ -29,6 +30,7 @@ class MessageBean extends BaseBean{
         this._type=null;
         this._create_time=null;
         this._content=null;
+        this._duration=null;
     }
 
     get send_id() {
@@ -69,6 +71,14 @@ class MessageBean extends BaseBean{
 
     set content(value) {
         this._content = value;
+    }
+
+    get duration() {
+        return this._duration;
+    }
+
+    set duration(value) {
+        this._duration = value;
     }
 }
 module.exports=MessageBean;
