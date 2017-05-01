@@ -1,6 +1,7 @@
 /**
  * Created by wenshao on 2017/4/8.
  */
+'use strict'
 const WebSocket = require('ws');
 
 const wss = new WebSocket.Server({port: 3001});
@@ -10,7 +11,7 @@ const db = require("./conf/db");
 const messageDao = require("./db/dao/messageDao");
 const MessageBean = require("./bean/MessageBean");
 const ResCodeConstant = require("./constant/ResCodeConstant");
-
+const URL=require("url-parse");
 
 let tokenRedis = new ioredis(db.getRedis());
 
@@ -24,12 +25,13 @@ WebSocket.prototype.setUserInfo = function (userInfo) {
 };
 
 
-WebSocket.prototype.push = function (eventName,msg) {
-    if (typeof eventName == "string" && typeof msg =="object"){
-        let sendString = {"eventName":eventName,message:msg};
+WebSocket.prototype.push = function (eventName, msg) {
+    if (typeof eventName == "string" && typeof msg == "object") {
+        let sendString = {"eventName": eventName, message: msg};
         let stringify = JSON.stringify(sendString);
+        console.log(stringify)
         this.send(stringify);
-    }else{
+    } else {
         console.log("格式错误！");
     }
 
@@ -81,9 +83,9 @@ wss.on('connection', function connection(ws) {
 
         if ("eventName" in jsonMessage && typeof jsonMessage.eventName == "string") {
             let userInfo = ws.getUserInfo();
-            if (!userInfo || !"user_id" in userInfo){
+            if (!userInfo || !"user_id" in userInfo) {
                 //ws.send();
-            }else{
+            } else {
                 ws.emit(jsonMessage.eventName, jsonMessage);
             }
         }
@@ -94,14 +96,37 @@ wss.on('connection', function connection(ws) {
         // 参数检查
         let messageBean = new MessageBean();
         messageBean.setJson(msg);
-        messageBean.send_id=ws.getUserInfo().user_id;
-        messageBean.create_time=new Date().getTime();
+        messageBean.send_id = ws.getUserInfo().user_id;
+        messageBean.create_time = new Date().getTime();
+
+
+
+        if (MessageBean.check(messageBean)) {
+            let resultMsg = ResCodeConstant.get("PARAMETER_ERROR");
+            ws.push("responseMsg", resultMsg);
+            return;
+
+        }
         // TODO 权限检查
-        let result = await messageDao.insert(messageBean.getJson());
-        let resultMsg = JSON.parse(JSON.stringify(ResCodeConstant.SUCCESS));
-        resultMsg.sendCode=msg.sendCode; // 返回发送码
-        console.log("==============")
-        ws.push("responseMsg",resultMsg);
+
+        let jsonObj = messageBean.getJson();
+        // 替换非文字类型的绝对路径
+        if (jsonObj.type!="text" && jsonObj.content){
+            let url = new URL(jsonObj.content);
+            if (url.slashes){
+                jsonObj.content=url.pathname;
+            }
+
+        }
+        messageDao.insert(jsonObj);
+        // 推送给指定的用户
+        if (socketId.has(messageBean.receive_id)){
+            let receive_ws = socketId.get(messageBean.receive_id);
+            receive_ws.push("newMsg",messageBean.getJson());
+        }
+        let resultMsg = ResCodeConstant.get("SUCCESS");
+        resultMsg.sendCode = msg.sendCode; // 返回发送码
+        ws.push("responseMsg", resultMsg);
     })
 
 

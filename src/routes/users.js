@@ -25,7 +25,7 @@ router.post('/register', async(ctx) => {
     // 检查数据是否合法
     let err = UserBean.check(userBean);
     if (err) {
-        Response.httpJson(ctx, ResCodeConstant.PARAMETER_ERROR);
+        Response.httpJson(ctx, ResCodeConstant.get("PARAMETER_ERROR"));
         return;
     }
     let resultMsg = null;
@@ -35,19 +35,18 @@ router.post('/register', async(ctx) => {
         if (result == null) {
             let insert = await userDao.insert(userBean.getJson());
             if (insert.insertedCount == 1) {
-                resultMsg = ResCodeConstant.SUCCESS;
+                resultMsg = ResCodeConstant.get("SUCCESS");
             } else {
-                resultMsg = ResCodeConstant.MONGODB_INSERT_ERROR;
+                resultMsg = ResCodeConstant.get("MONGODB_INSERT_ERROR");
             }
 
         } else {
-            resultMsg = ResCodeConstant.USER_EXIST;
+            resultMsg = ResCodeConstant.get("USER_EXIST");
         }
 
     } catch (e) {
         console.log(e);
-        //Response.httpJson(ctx, ResCodeConstant.MONGODB_INSERT_ERROR);
-        resultMsg = ResCodeConstant.MONGODB_INSERT_ERROR;
+        resultMsg = ResCodeConstant.get("MONGODB_INSERT_ERROR");
     } finally {
         Response.httpJson(ctx, resultMsg);
 
@@ -128,18 +127,19 @@ router.post("/message/friend", async(ctx) => {
     try {
         let result = await messageDao.find(
             {
-                select:{
-                "$or": [
-                    {"send_id": ctx.user_id, "receive_id": params.receive_id},
-                    {"send_id": params.receive_id, "receive_id": ctx.user_id}
-                ]},
-                sort:{"create_time":1}
+                select: {
+                    "$or": [
+                        {"send_id": ctx.user_id, "receive_id": params.receive_id},
+                        {"send_id": params.receive_id, "receive_id": ctx.user_id}
+                    ]
+                },
+                sort: {"create_time": 1}
             }
         );
 
-        for (let val of result){
-            if ("type" in val && val.type != "text"){
-                val.content=ctx.default_val.imageAddress+val.content;
+        for (let val of result) {
+            if ("type" in val && val.type != "text") {
+                val.content = ctx.default_val.imageAddress + val.content;
             }
         }
         // 查询聊天室所有人的信息 id name head
@@ -159,6 +159,22 @@ router.post("/message/friend", async(ctx) => {
 
 
 });
+router.all("/test", async(ctx) => {
+    var data = {
+        code:0,
+        data: [
+            {"id":"1","username":"demo",
+                "name":"\u59d3\u540d","phone":"13882500000"},
+            {"id":"2","username":"user","name":"\u540d\u5b57",
+                "phone":"0731-8888888"}
+        ]
 
+    }
+    ctx.body = data;
+});
+router.all("/save", async(ctx) => {
+    console.log(ctx.request.body);
+    ctx.body = {code:0,data:{"id":66}};
+});
 
 module.exports = router;

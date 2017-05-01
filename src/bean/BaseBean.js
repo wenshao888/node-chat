@@ -14,7 +14,7 @@ class BaseBean{
             let schema_val =restraint[_key];
 
 
-            if (schema_val.required && ! _key in Bean ){//判断是否为必填
+            if (schema_val.required && (! _key in Bean || Bean[_key]==null)){//判断是否为必填
                 err={error:`${_key}为必填项`};
                 break;
             }
@@ -54,7 +54,7 @@ class BaseBean{
     }
     static check_length(schema_val,input_val,_key){
         let err=null;
-        if ("maxLength" in schema_val && typeof schema_val.maxLength =="number" && schema_val.maxLength<input_val[_key]){
+        if ("maxLength" in schema_val && input_val && typeof schema_val.maxLength =="number" && schema_val.maxLength<input_val[_key]){
             err ={error:`${_key}长度不符合`};
         }
         return err;

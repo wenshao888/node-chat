@@ -3,6 +3,7 @@
  */
 const Koa = require('koa');
 const app = new Koa();
+const cors=require("koa-cors");
 const morgan = require("./modules/morgan");
 const bodyParser=require("koa-bodyparser");
 const token=require("./modules/token");
@@ -23,6 +24,8 @@ app.use(token({
         "redisStore":redis
     })
 );
+
+app.use(cors())
 
 app.use(async (ctx,next)=>{
     if (ctx.ws_cookie!=null && "userinfo" in ctx.ws_cookie && "user_id"  in ctx.ws_cookie.userinfo){
