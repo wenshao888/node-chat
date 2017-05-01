@@ -54,9 +54,9 @@ const code = {
 };
 function get(name) {
     if (typeof name=="string" && name in code){
-        return code[name];
+        return JSON.parse(JSON.stringify(code[name]));
     }
-    return code.NODE_RETURN_CODE_ERROR;
+    return JSON.parse(JSON.stringify(code.NODE_RETURN_CODE_ERROR));
 }
 
 

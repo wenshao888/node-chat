@@ -62,7 +62,7 @@ router.post("/login", async(ctx) => {
     try {
         let result = await userDao.findOne({"name": params.name, "password": params.password});
         if (result == null) {
-            resultMsg = ResCodeConstant.USER_LOGIN_FAILED;
+            resultMsg = ResCodeConstant.get("USER_LOGIN_FAILED");
         } else {  //登录成功
             ctx.Token.cookie.userinfo = {
                 user_id: result.user_id,
@@ -70,7 +70,7 @@ router.post("/login", async(ctx) => {
                 head: ctx.default_val.imageAddress + result.head,
 
             };
-            resultMsg = JSON.parse(JSON.stringify(ResCodeConstant.SUCCESS));
+            resultMsg = ResCodeConstant.get("SUCCESS");
             resultMsg.user = {
                 user_id: result.user_id,
                 name: result.name,
@@ -80,8 +80,7 @@ router.post("/login", async(ctx) => {
 
     } catch (e) {
         console.log(e);
-        //Response.httpJson(ctx, ResCodeConstant.MONGODB_INSERT_ERROR);
-        resultMsg = ResCodeConstant.MONGODB_INSERT_ERROR;
+        resultMsg = ResCodeConstant.get("MONGODB_INSERT_ERROR");
     } finally {
         Response.httpJson(ctx, resultMsg);
     }
@@ -95,7 +94,7 @@ router.post("/userInfo", async(ctx) => {
     try {
         let result = await userDao.findOne({user_id: user_id}, {friends: 1});
         if (result == null) {
-            resultMsg = ResCodeConstant.USER_INFO_ERROR;
+            resultMsg = ResCodeConstant.get("USER_INFO_ERROR");
         } else {  //登录成功 加载好友列表   加载未读消息
             let friends = result.friends;
             if (friends instanceof Array) {
@@ -108,14 +107,13 @@ router.post("/userInfo", async(ctx) => {
             } else {
                 friends = [];
             }
-            resultMsg = JSON.parse(JSON.stringify(ResCodeConstant.SUCCESS));
+            resultMsg = ResCodeConstant.get("SUCCESS");
             resultMsg.friends = result.friends;
         }
 
     } catch (e) {
         console.log(e);
-        //Response.httpJson(ctx, ResCodeConstant.MONGODB_INSERT_ERROR);
-        resultMsg = ResCodeConstant.MONGODB_INSERT_ERROR;
+        resultMsg = ResCodeConstant.get("MONGODB_INSERT_ERROR");
     } finally {
         Response.httpJson(ctx, resultMsg);
     }
@@ -147,12 +145,12 @@ router.post("/message/friend", async(ctx) => {
         for (let temp of userInfoList) {
             temp.head = ctx.default_val.imageAddress + temp.head;
         }
-        resultMsg = JSON.parse(JSON.stringify(ResCodeConstant.SUCCESS));
+        resultMsg = ResCodeConstant.get("SUCCESS");
         resultMsg.messageList = result;
         resultMsg.userInfoList = userInfoList;
     } catch (e) {
         console.log(e);
-        resultMsg = ResCodeConstant.MONGODB_QUERY_ERROR;
+        resultMsg = ResCodeConstant.get("MONGODB_QUERY_ERROR");
     } finally {
         Response.httpJson(ctx, resultMsg);
     }

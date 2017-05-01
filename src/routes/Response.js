@@ -5,6 +5,8 @@
 const ResCodeConstant = require("../constant/ResCodeConstant");
 
 function httpJson(ctx, data) {
+    console.log(ResCodeConstant.get("SUCCESS"));
+
     try {
         if (data.code == ResCodeConstant.get("SUCCESS").code) {
             ctx.body=data;
