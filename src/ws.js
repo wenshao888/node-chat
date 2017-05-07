@@ -93,6 +93,7 @@ wss.on('connection', function connection(ws) {
 
 
     ws.on("postMsg", async(msg) => {
+        console.log(msg);
         // 参数检查
         let messageBean = new MessageBean();
         messageBean.setJson(msg);

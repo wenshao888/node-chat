@@ -86,31 +86,34 @@ router.post("/login", async(ctx) => {
     }
 
 });
-//noinspection JSUnresolvedFunction
+
+// 初始化
+router.post("/init", async(ctx) => {
+    let resultMsg = null;
+    let user_id = ctx.user_id;
+    try {
+
+        let userFriends = await userDao.getUserFriends({user_id:user_id,imageAddress:ctx.default_val.imageAddress});
+
+        resultMsg = ResCodeConstant.get("SUCCESS");
+        resultMsg.friends = userFriends;
+    } catch (e) {
+        console.log(e);
+        resultMsg = ResCodeConstant.get("MONGODB_QUERY_ERROR");
+    } finally {
+        Response.httpJson(ctx, resultMsg);
+    }
+
+});
+// 加载好友列表
 router.post("/userInfo", async(ctx) => {
     let resultMsg = null;
     let params = ctx.request.body;
     let user_id = ctx.user_id;
     try {
-        let result = await userDao.findOne({user_id: user_id}, {friends: 1});
-        if (result == null) {
-            resultMsg = ResCodeConstant.get("USER_INFO_ERROR");
-        } else {  //登录成功 加载好友列表   加载未读消息
-            let friends = result.friends;
-            if (friends instanceof Array) {
-                for (let val of friends) {
-                    val.friend_info_list = await userDao.findInfoByUserIdList(val.friend_id_list);
-                    for (let temp of val.friend_info_list) {
-                        temp.head = ctx.default_val.imageAddress + temp.head;
-                    }
-                }
-            } else {
-                friends = [];
-            }
-            resultMsg = ResCodeConstant.get("SUCCESS");
-            resultMsg.friends = result.friends;
-        }
-
+        let userFriends = await userDao.getUserFriends({user_id:user_id,imageAddress:ctx.default_val.imageAddress});
+        resultMsg = ResCodeConstant.get("SUCCESS");
+        resultMsg.friends = userFriends;
     } catch (e) {
         console.log(e);
         resultMsg = ResCodeConstant.get("MONGODB_INSERT_ERROR");
@@ -119,6 +122,7 @@ router.post("/userInfo", async(ctx) => {
     }
 
 });
+// 好友列表
 router.post("/message/friend", async(ctx) => {
     let params = ctx.request.body;
     let resultMsg = null;
@@ -155,8 +159,10 @@ router.post("/message/friend", async(ctx) => {
         Response.httpJson(ctx, resultMsg);
     }
 
-
 });
+
+
+
 router.all("/test", async(ctx) => {
     var data = {
         code:0,

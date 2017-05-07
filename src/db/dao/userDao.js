@@ -68,18 +68,53 @@ function findInfoByUserIdList(idList) {
             });
 
         } else {
-            resolve("idList error");
+            reject("idList error");
         }
 
     });
 
 }
 
+// 获取好友列表
+function getUserFriends(params) {
+
+    return findOne({user_id: params.user_id}, {friends: 1}).then(async function (result) {
+        let friends = result.friends;
+        for (let obj of friends) {
+            obj.friend_info_list = await findInfoByUserIdList(obj.friend_id_list);
+            for (let temp of obj.friend_info_list) {
+                temp.head = params.imageAddress + temp.head;
+                temp.groupId=obj.id;
+            }
+        }
+        console.log(friends);
+        return friends;
 
 
+    });
+}
+
+
+function checkParams(_json) {
+    if (!_json) {
+        return {code: 1, msg: "_json错误"};
+    }
+    if (!("select" in _json) || typeof _json.select != "object") {
+        return {code: 1, msg: "select错误"};
+    }
+    if (!("show" in _json)) {
+        _json.show = {}
+    }
+    if (!("sort" in _json)) {
+        _json.sort = {}
+    }
+    return {code: 0, _json: _json};
+}
 exports.insert = insert;
 exports.findOne = findOne;
 exports.findInfoByUserIdList = findInfoByUserIdList;
+exports.getUserFriends = getUserFriends;
+
 
 
 
