@@ -17,13 +17,14 @@
     "koa-bodyparser": "^4.1.0",
     "koa-convert": "^1.2.0",
     "koa-cors": "0.0.16",
+    "koa-jade": "^2.1.0",
     "koa-router": "^7.0.1",
     "log4js": "^1.1.1",
     "mongodb": "^2.2.24",
     "morgan": "~1.7.0",
     "mysql": "^2.13.0",
     "serve-favicon": "~2.3.0",
-    "ws": "^2.2.3",
-    "url-parse": "^1.1.8"
+    "url-parse": "^1.1.8",
+    "ws": "^2.2.3"
   }
 }

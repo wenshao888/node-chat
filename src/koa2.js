@@ -7,7 +7,8 @@ const cors=require("koa-cors");
 const morgan = require("./modules/morgan");
 const bodyParser=require("koa-bodyparser");
 const token=require("./modules/token");
-let redis = require("./conf/db").getRedis();
+const Jade = require('koa-jade');
+const redis = require("./conf/db").getRedis();
 const router = require('koa-router')();
 const convert =require('koa-convert');
 
@@ -25,7 +26,7 @@ app.use(token({
     })
 );
 
-app.use(cors())
+app.use(cors());
 
 app.use(async (ctx,next)=>{
     if (ctx.ws_cookie!=null && "userinfo" in ctx.ws_cookie && "user_id"  in ctx.ws_cookie.userinfo){
@@ -41,4 +42,4 @@ router.use('/users', users.routes(), users.allowedMethods());
 app.use(router.routes(), router.allowedMethods());
 
 
-app.listen(3000);
+app.listen(8080);
